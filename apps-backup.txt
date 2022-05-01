@@ -1,0 +1,14 @@
+# AnyDesk
+## ref: https://support.anydesk.com/knowledge/anydesk-id-and-alias
+%ProgramData%\AnyDesk\*.conf
+%APPDATA%\AnyDesk\*.conf
+
+# Conda
+## Notes: C:\Users\masbi\OneDrive\Documents\WindowsPowerShell\profile.ps1
+##  This file is changed by conda
+
+# WinAuth
+
+# Synology Apps
+%LOCALAPPDATA%\SynologyDrive\**\conf\blacklist.filter
+
