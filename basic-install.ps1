@@ -112,9 +112,11 @@ Write-Information "Creating ~/.ssh/id_rsa file"
 if (!(Test-Path -PathType Leaf "$env:USERPROFILE\.ssh\id_rsa"))
 {
     ssh-keygen -t rsa -b 4096 -C "$env:ID_RSA_EMAIL"
-    Get-Content "$env:USERPROFILE\.ssh\id_rsa.pub"
     Write-Information "Paste the following content at"
     Write-Information "https://github.com/settings/ssh/new"
+    Write-Information ""
+    Get-Content "$env:USERPROFILE\.ssh\id_rsa.pub"
+    Write-Information ""
     Read-Host "Press Enter to continue"
 }
 
