@@ -180,7 +180,6 @@ GoTo :End_Main
     choco upgrade -y gpu-z
     choco upgrade -y sysinternals
     choco upgrade -y bleachbit
-    choco upgrade -y linkshellextension
     choco upgrade -y sizer
     choco upgrade -y IconViewer
     choco upgrade -y imdisk-toolkit
@@ -212,6 +211,8 @@ GoTo :End_Main
     choco upgrade -y winrar
     choco upgrade -y 7zip
     rem choco upgrade -y modern7z
+
+    choco upgrade -y linkshellextension
 
   :MessagingToolsGroup
 

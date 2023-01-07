@@ -6,3 +6,15 @@ if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
         Exit
     }
 }
+
+choco upgrade -y everything
+choco upgrade -y es
+choco upgrade -y wiztree
+
+choco upgrade -y fastcopy
+choco upgrade -y grepwin
+
+choco upgrade -y winrar
+choco upgrade -y 7zip
+
+choco upgrade -y linkshellextension

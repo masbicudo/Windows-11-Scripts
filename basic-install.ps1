@@ -93,6 +93,26 @@ function Set-DotEnv-Variable {
 
     Write-Output $value
 }
+function Load-DotEnv {
+    Param (
+        [string]$FileName
+    )
+    
+    if ([string]::IsNullOrWhiteSpace($FileName))
+    {
+        $FileName = ".env"
+    }
+
+    switch -File $FileName {
+        default {
+            $name, $value = $_.Trim() -split '=', 2
+            if ($name -and $name[0] -ne '#') { # ignore blank and comment lines.
+                Write-Information -MessageData "Env:$name = $value"
+                Set-Item "Env:$name" $value
+            }
+        }
+    }
+}
 
 
 if (!(Test-Path -PathType Leaf ".env"))
@@ -126,15 +146,7 @@ if (!(Test-Path -PathType Leaf ".env"))
     Set-DotEnv-Variable -Variable "GIT_USER_NAME" -Text "Git Config User Name" -Default $default_user
 }
 
-switch -File ".env" {
-    default {
-        $name, $value = $_.Trim() -split '=', 2
-        if ($name -and $name[0] -ne '#') { # ignore blank and comment lines.
-            Write-Information -MessageData "Env:$name = $value"
-            Set-Item "Env:$name" $value
-        }
-    }
-}
+Load-DotEnv
 
 
 # Set execution policy

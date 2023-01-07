@@ -31,14 +31,24 @@ $ErrorActionPreference = 'Stop'
 $InformationPreference = 'Continue'
 
 . .\libs\Ask.ps1
-. .\libs\Set-DotEnv-Variable.ps1
+. .\libs\Load-DotEnv.ps1
 
-Set-PsEnv
+Load-DotEnv
 
 
 # Moving special folders
 if (Ask -Text "Move special folders for Desktop and Downloads to D:\" -Default "N") {
     . .\move-special-folders.ps1
+}
+
+# Install basic utilities
+if (Ask -Text "Would you like to install basic file utilities" -Default "N") {
+    . .\choco-bundles\basic-files-utilities.ps1
+}
+
+# Install dev tools
+if (Ask -Text "Would you like to install basic dev tools" -Default "N") {
+    . .\choco-bundles\basic-dev-tools.ps1
 }
 
 # Done
