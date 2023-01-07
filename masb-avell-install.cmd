@@ -125,13 +125,14 @@ GoTo :End_Main
     choco upgrade -y vscode
     rem choco upgrade -y visualstudio-installer
 
-    choco upgrade -y pgadmin4
-    choco install -y postgresql --params '/Password:mig29' --params-global
     choco upgrade -y notepadplusplus
     choco upgrade -y winmerge
     choco upgrade -y git --params "'/GitAndUnixToolsOnPath /WindowsTerminalProfile'" --params-global
     choco upgrade -y gitextensions
     choco upgrade -y kdiff3
+
+    choco upgrade -y pgadmin4
+    choco install -y postgresql --params '/Password:mig29' --params-global
     choco upgrade -y tad
     choco upgrade -y nginx
     choco upgrade -y win-acme
