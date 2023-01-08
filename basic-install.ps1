@@ -18,6 +18,12 @@
 #>
 
 
+# NOTE: This file is intended to be executed directly from the web,
+# using the IEX command. This makes it impossible to SOURCE import
+# other ps1 files. If you need any library, either install them from
+# NuGet package available online, or copy the contents of the file
+# here instead.
+
 # Input parameters
 [OutputType($null)]
 Param(
