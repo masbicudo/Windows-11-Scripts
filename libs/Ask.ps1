@@ -13,6 +13,14 @@ function Ask
         $message += " (default=$Default)"
     }
 
+    # Force must be a global or local
+    # variable defined in the scope of the
+    # file that imported this library
+    if ($Force) {
+        Write-Information "${message}: Y"
+        return $true
+    }
+    
     while ($true) {
         $value = Read-Host "$message"
         if ([string]::IsNullOrWhiteSpace($value))

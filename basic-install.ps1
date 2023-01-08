@@ -45,10 +45,14 @@ function Ask
         $message += " (default=$Default)"
     }
 
+    # Force must be a global or local
+    # variable defined in the scope of the
+    # file that imported this library
     if ($Force) {
         Write-Information "${message}: Y"
         return $true
     }
+    
     while ($true) {
         $value = Read-Host "$message"
         if ([string]::IsNullOrWhiteSpace($value))
@@ -225,7 +229,7 @@ if (Ask -Text "Would you like to clone Windows-11-Scripts now?" -Default "Y") {
         if ((Test-Path -PathType Leaf ".env"))
         {
             cp ".env" "D:\Projects\Windows-11-Scripts\" -Force
-        }    
+        }
     }
 }
 

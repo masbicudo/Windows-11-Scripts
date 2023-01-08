@@ -21,7 +21,7 @@ function Load-DotEnv {
         default {
             $name, $value = $_.Trim() -split '=', 2
             if ($name -and $name[0] -ne '#') { # ignore blank and comment lines.
-                Write-Information -MessageData "Env:$name = $value"
+                Write-Information -MessageData "$name = $value"
                 Set-Item "Env:$name" $value
             }
         }
