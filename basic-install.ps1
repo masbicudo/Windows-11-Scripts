@@ -195,12 +195,12 @@ function Load-DotEnv {
         $FileName = ".env"
     }
 
-    Write-Information -MessageData "Loading .env file from "+(Get-Location).Path
+    Write-Information ("Loading .env file from "+(Get-Location).Path)
     switch -File $FileName {
         default {
             $name, $value = $_.Trim() -split '=', 2
             if ($name -and $name[0] -ne '#') { # ignore blank and comment lines.
-                Write-Information -MessageData "    Env:$name = $value"
+                Write-Information "    Env:$name = $value"
                 Set-Item "Env:$name" $value
             }
         }
@@ -221,21 +221,28 @@ else
     # $Force = $true
 }
 
-if (!(Test-Path -PathType Leaf ".env"))
+
+if (Test-Path -PathType Leaf ".env")
 {
-    Write-Information -MessageData '.env file not found'
-    Write-Information -MessageData 'You can answer some questions when required to fill the file'
-    Write-Information -MessageData '    == or =='
-    Write-Information -MessageData 'You can create the file yourself externally'
-    Write-Information -MessageData '    at ' + Get-Location + "\.env"
+    $location = (Get-Location).Path
+    Write-Information "Found .env file at $location"
+}
+else
+{
+    $location = (Get-Location).Path
+    Write-Information '.env file not found'
+    Write-Information 'You can answer some questions when required to fill the file'
+    Write-Information '    == or =='
+    Write-Information 'You can create the file yourself externally'
+    Write-Information ('    at ' + $location + "\.env")
     Read-Host "Press Enter to continue"
 }
 
 Load-DotEnv
 
-Write-Information -MessageData 'Some information is needed to use this script.'
+Write-Information 'Some information is needed to use this script.'
 
-Write-Information -MessageData 'General questions about the user'
+Write-Information 'General questions about the user'
 
 $default_email = GetSet-DotEnv-Variable -Variable "EMAIL" -Text "E-mail"
 $default_user = GetSet-DotEnv-Variable -Variable "USER_NAME" -Text "Your name"
@@ -243,7 +250,7 @@ $default_user = GetSet-DotEnv-Variable -Variable "USER_NAME" -Text "Your name"
 GetSet-DotEnv-Variable -Variable "GIT_EMAIL" -Text "Git Config E-mail" -Default $default_email
 GetSet-DotEnv-Variable -Variable "GIT_USER_NAME" -Text "Git Config User Name" -Default $default_user
 
-Write-Information -MessageData 'Service provider questions'
+Write-Information 'Service provider questions'
 
 # GetSet-DotEnv-Variable -Variable "DNS_HE_PASSWORD" -Text "DNS HE Password"
 
@@ -274,7 +281,7 @@ if (Where.exe "choco")
 }
 elseif (Ask -Text "Would you like to install Chocolatey?" -Default "Y")
 {
-    Write-Information -MessageData 'Installing Chocolatey'
+    Write-Information 'Installing Chocolatey'
     Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 }
 
@@ -286,7 +293,7 @@ if (Where.exe "git")
 }
 elseif (Ask -Text "Would you like to install Git?" -Default "Y")
 {
-    Write-Information -MessageData 'Installing Git'
+    Write-Information 'Installing Git'
     choco upgrade -y git --params "'/GitAndUnixToolsOnPath /WindowsTerminalProfile'" --params-global
     $Env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")  
 }
@@ -296,7 +303,7 @@ $git_global_email = git config --global user.email
 if (([string]::IsNullOrWhiteSpace($git_global_username)) -or ([string]::IsNullOrWhiteSpace($git_global_email)))
 {
     if (Ask -Text "Would you like to set global Git configurations now?" -Default "Y") {
-        Write-Information -MessageData 'Setting up Git'
+        Write-Information 'Setting up Git'
         git config --global user.name "$Env:GIT_USER_NAME"
         git config --global user.name
         git config --global user.email "$Env:GIT_EMAIL"
@@ -305,7 +312,7 @@ if (([string]::IsNullOrWhiteSpace($git_global_username)) -or ([string]::IsNullOr
 }
 else
 {
-    Write-Information -MessageData 'Get global username and email already set'
+    Write-Information 'Get global username and email already set'
 }
 
 
@@ -354,7 +361,7 @@ if (Test-Path -PathType Container "D:\Projects")
     Write-Information "D:\Projects already created"
 }
 elseif (Ask -Text "Would you like to create D:\Projects directory now?" -Default "Y") {
-    Write-Information -MessageData 'Creating Projects directory'
+    Write-Information 'Creating Projects directory'
     Write-Information "    There are 2 ways of creating the projects folder."
     Write-Information "1) Just create folder"
     Write-Information "2) Use SyncThing + SyncTrayzor to synchronize with another computer"
@@ -392,13 +399,13 @@ elseif (Ask -Text "Would you like to clone Windows-11-Scripts now?" -Default "Y"
 {
     if (Test-Path -PathType Container "D:\Projects")
     {
-        Write-Information -MessageData 'Cloning Windows-11-Scripts'
+        Write-Information 'Cloning Windows-11-Scripts'
         pushd "D:\Projects"
         git clone "git@github.com:masbicudo/Windows-11-Scripts.git"
         Invoke-Item ".\Windows-11-Scripts"
         popd
     }
-    Write-Information -MessageData 'Copying .env file to project directory'
+    Write-Information 'Copying .env file to project directory'
     $location = (Get-Location).Path
     if (!($location -eq "D:\Projects\Windows-11-Scripts")) {
         if ((Test-Path -PathType Leaf ".env"))
@@ -410,16 +417,16 @@ elseif (Ask -Text "Would you like to clone Windows-11-Scripts now?" -Default "Y"
 
 
 # Done
-Write-Information -MessageData 'Basic install is done.'
+Write-Information 'Basic install is done.'
 
 while (Test-Path -PathType Container "D:\Projects\Windows-11-Scripts")
 {
     cd "D:\Projects\Windows-11-Scripts"
 
-    Write-Information -MessageData 'You can now run other setup steps:'
-    Write-Information -MessageData '1) common-install.ps1: installs common tools, such as VS Code, Everything, and so on'
-    Write-Information -MessageData '2) clone-my-projects.ps1: clones projects from GitHub'
-    Write-Information -MessageData 'Q) quit'
+    Write-Information 'You can now run other setup steps:'
+    Write-Information '1) common-install.ps1: installs common tools, such as VS Code, Everything, and so on'
+    Write-Information '2) clone-my-projects.ps1: clones projects from GitHub'
+    Write-Information 'Q) quit'
     $choice = Multiple-Options -Text "Choose an option" -Options @( "1", "2" )
     $choice = $choice.ToLower()
     if ($choice -eq "1")
@@ -437,4 +444,4 @@ while (Test-Path -PathType Container "D:\Projects\Windows-11-Scripts")
 
 }
 
-Write-Information -MessageData 'Done'
+Write-Information 'Done'
