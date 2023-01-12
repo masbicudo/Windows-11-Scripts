@@ -212,7 +212,8 @@ if (Test-Path -PathType Container "D:\Projects\Windows-11-Scripts")
 {
     cd "D:\Projects\Windows-11-Scripts"
 }
-else {
+else
+{
     # $Force = $true
 }
 
@@ -256,13 +257,15 @@ if (!(Get-ExecutionPolicy -eq "Bypass"))
         Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser
     }    
 }
-else {
+else
+{
     Write-Information "Execution policy = Bypass"
 }
 
 
 # Install Chocolatey
-if (Where.exe "choco") {
+if (Where.exe "choco")
+{
     Write-Information "Chocolatey already installed"
 }
 elseif (Ask -Text "Would you like to install Chocolatey?" -Default "Y")
@@ -273,7 +276,8 @@ elseif (Ask -Text "Would you like to install Chocolatey?" -Default "Y")
 
 
 # Install Git
-if (Where.exe "git") {
+if (Where.exe "git")
+{
     Write-Information "Git already installed"
 }
 elseif (Ask -Text "Would you like to install Git?" -Default "Y")
@@ -285,7 +289,7 @@ elseif (Ask -Text "Would you like to install Git?" -Default "Y")
 
 $git_global_username = git config --global user.name
 $git_global_email = git config --global user.email
-if ([string]::IsNullOrWhiteSpace($git_global_username) -or [string]::IsNullOrWhiteSpace($git_global_email))
+if (([string]::IsNullOrWhiteSpace($git_global_username)) -or ([string]::IsNullOrWhiteSpace($git_global_email)))
 {
     if (Ask -Text "Would you like to set global Git configurations now?" -Default "Y") {
         Write-Information -MessageData 'Setting up Git'
@@ -295,7 +299,8 @@ if ([string]::IsNullOrWhiteSpace($git_global_username) -or [string]::IsNullOrWhi
         git config --global user.email
     }    
 }
-else {
+else
+{
     Write-Information -MessageData 'Get global username and email already set'
 }
 
@@ -305,7 +310,8 @@ if (Test-Path -PathType Leaf "$Env:USERPROFILE\.ssh\id_rsa")
 {
     Write-Information "Private key ~/.ssh/id_rsa already created"
 }
-elseif (Ask -Text "Would you like to create ~/.ssh/id_rsa now?" -Default "Y") {
+elseif (Ask -Text "Would you like to create ~/.ssh/id_rsa now?" -Default "Y")
+{
     Write-Information "Creating ~/.ssh/id_rsa file"
     if (!(Test-Path -PathType Leaf "$Env:USERPROFILE\.ssh\id_rsa"))
     {
@@ -319,7 +325,8 @@ if (Get-Check-Point "GITHUB")
 {
     Write-Information "GitHub already configured before"
 }
-elseif (Ask -Text "Would you like to setup GitHub now?" -Default "Y") {
+elseif (Ask -Text "Would you like to setup GitHub now?" -Default "Y")
+{
     if (Test-Path -PathType Leaf "$Env:USERPROFILE\.ssh\id_rsa.pub")
     {
         Write-Information "Paste the following content:"
@@ -365,7 +372,7 @@ if (Get-Check-Point "FIREWALL_EXCLUSION_PROJECTS")
 {
     Write-Information "Firewall exclusion for Projects already configured before"
 }
-elseif (Ask -Text "Would you like to create a firewall exclusion for D:\Projects directory now?" -Default "Y") {
+elseif (Ask -Text "Would you like to create a firewall exclusion for D:\Projects directory now?" -Default "Y")
 {
     Add-MpPreference -ExclusionPath "D:\Projects"
     Set-Check-Point "FIREWALL_EXCLUSION_PROJECTS"
@@ -377,7 +384,8 @@ if (Test-Path -PathType Container "D:\Projects\Windows-11-Scripts")
 {
     Write-Information "D:\Projects\Windows-11-Scripts already cloned"
 }
-elseif (Ask -Text "Would you like to clone Windows-11-Scripts now?" -Default "Y") {
+elseif (Ask -Text "Would you like to clone Windows-11-Scripts now?" -Default "Y")
+{
     if (Test-Path -PathType Container "D:\Projects")
     {
         Write-Information -MessageData 'Cloning Windows-11-Scripts'
