@@ -195,7 +195,7 @@ function Load-DotEnv {
         $FileName = ".env"
     }
 
-    Write-Information -MessageData "Loading .env file"
+    Write-Information -MessageData "Loading .env file from "+(Get-Location).Path
     switch -File $FileName {
         default {
             $name, $value = $_.Trim() -split '=', 2
@@ -207,6 +207,10 @@ function Load-DotEnv {
     }
 }
 
+Write-Information "Windows Environment Setup Script"
+Write-Information "    by Miguel Angelo"
+Write-Information "    latest: 2023-01-12"
+Write-Information "    version: 1.0.1"
 
 if (Test-Path -PathType Container "D:\Projects\Windows-11-Scripts")
 {
@@ -250,7 +254,7 @@ Write-Information -MessageData 'Service provider questions'
 
 
 # Set execution policy
-if (!(Get-ExecutionPolicy -eq "Bypass"))
+if (!((Get-ExecutionPolicy) -eq "Bypass"))
 {
     if (Ask -Text "Would you like to set ExecutionPolicy to Bypass for CurrentUser?" -Default "N")
     {
