@@ -75,7 +75,39 @@ function Ask
         }
     }
 }
-function Set-DotEnv-Variable {
+function Multiple-Options
+{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)]
+        [string]$Text,
+        [string[]]$Options,
+        [string]$Default
+    )
+    
+    $OptTxt = "["+[string]::Join("/", $Options)+"]"
+    [string]$message = "$Text $OptTxt"
+    if (!([string]::IsNullOrEmpty($Default)))
+    {
+        $message += " (default=$Default)"
+    }
+
+    while ($true) {
+        $value = Read-Host "$message"
+        if ([string]::IsNullOrWhiteSpace($value))
+        {
+            $value = $Default
+        }
+        if ($Options -contains $value)
+        {
+            return $value
+        }
+        else {
+            return "invalid"
+        }
+    }
+}
+function GetSet-DotEnv-Variable {
 
     [CmdletBinding()]
     param (
@@ -92,16 +124,66 @@ function Set-DotEnv-Variable {
         $message += " ($Default)"
     }
 
-    $value = Read-Host "$message"
-    if (!([string]::IsNullOrEmpty($value)))
+    try {
+        $value = (Get-Item "Env:$Variable").Value
+    } catch {
+        <#Do this if a terminating exception happens#>
+        $value = ""
+    }
+
+    if ([string]::IsNullOrWhiteSpace($value))
     {
-        "$Variable=$value" | Out-File -FilePath ".env" -Append
+        $value = Read-Host "$message"
+        if (!([string]::IsNullOrEmpty($value)))
+        {
+            "$Variable=$value" | Out-File -encoding "utf8" -FilePath ".env" -Append
+        }
+        else {
+            "$Variable=$Default" | Out-File -encoding "utf8" -FilePath ".env" -Append
+        }
     }
     else {
-        "$Variable=$Default" | Out-File -FilePath ".env" -Append
+        $message += ": $value"
+        Write-Information $message
     }
 
     Write-Output $value
+}
+function Get-Check-Point {
+
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)]
+        [string]$Variable
+    )
+    if (!(Test-Path -PathType Leaf "$Env:USERPROFILE\init-script.env"))
+    {
+        return $false
+    }
+    switch -File "$Env:USERPROFILE\init-script.env" {
+        default {
+            $name, $value = $_.Trim() -split '=', 2
+            if ($name -and $name[0] -ne '#') { # ignore blank and comment lines.
+                if ($name -eq $Variable)
+                {
+                    return $true
+                }
+            }
+        }
+    }
+
+    return $false
+}
+function Set-Check-Point {
+
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)]
+        [string]$Variable
+    )
+
+    $value = "ok"
+    "$Variable=$value" | Out-File -encoding "utf8" -FilePath "$Env:USERPROFILE\init-script.env" -Append
 }
 function Load-DotEnv {
     Param (
@@ -113,11 +195,12 @@ function Load-DotEnv {
         $FileName = ".env"
     }
 
+    Write-Information -MessageData "Loading .env file"
     switch -File $FileName {
         default {
             $name, $value = $_.Trim() -split '=', 2
             if ($name -and $name[0] -ne '#') { # ignore blank and comment lines.
-                Write-Information -MessageData "Env:$name = $value"
+                Write-Information -MessageData "    Env:$name = $value"
                 Set-Item "Env:$name" $value
             }
         }
@@ -125,49 +208,64 @@ function Load-DotEnv {
 }
 
 
-if (!(Test-Path -PathType Leaf ".env"))
+if (Test-Path -PathType Container "D:\Projects\Windows-11-Scripts")
 {
-    Write-Information -MessageData '.env file not found'
-    Write-Information -MessageData 'You can answer some questions now to create the file'
-    Write-Information -MessageData '    == or =='
-    Write-Information -MessageData 'You can create the file yourself externally'
-    Read-Host "Press Enter to continue"
+    cd "D:\Projects\Windows-11-Scripts"
+}
+else {
+    # $Force = $true
 }
 
 if (!(Test-Path -PathType Leaf ".env"))
 {
-    Write-Information -MessageData 'Some information is needed to use scripts:'
-
-    Write-Information -MessageData 'General questions about the user'
-
-    $default_email = Set-DotEnv-Variable -Variable "EMAIL" -Text "E-mail"
-    $default_user = Set-DotEnv-Variable -Variable "USER_NAME" -Text "Your name"
-
-    Write-Information -MessageData 'Service provider questions'
-
-    Set-DotEnv-Variable -Variable "DNS_HE_PASSWORD" -Text "DNS HE Password"
-
-    Set-DotEnv-Variable -Variable "CF_TOKEN" -Text "CloudFlare Account Token"
-    Set-DotEnv-Variable -Variable "CF_DOMAIN" -Text "CloudFlare Account Domain"
-    Set-DotEnv-Variable -Variable "CF_RECORD" -Text "CloudFlare Account Record"
-    Set-DotEnv-Variable -Variable "CF_EMAIL" -Text "CloudFlare Account E-mail" -Default $default_email
-
-    Set-DotEnv-Variable -Variable "GIT_EMAIL" -Text "Git Config E-mail" -Default $default_email
-    Set-DotEnv-Variable -Variable "GIT_USER_NAME" -Text "Git Config User Name" -Default $default_user
+    Write-Information -MessageData '.env file not found'
+    Write-Information -MessageData 'You can answer some questions when required to fill the file'
+    Write-Information -MessageData '    == or =='
+    Write-Information -MessageData 'You can create the file yourself externally'
+    Write-Information -MessageData '    at ' + Get-Location + "\.env"
+    Read-Host "Press Enter to continue"
 }
 
 Load-DotEnv
 
+Write-Information -MessageData 'Some information is needed to use this script.'
+
+Write-Information -MessageData 'General questions about the user'
+
+$default_email = GetSet-DotEnv-Variable -Variable "EMAIL" -Text "E-mail"
+$default_user = GetSet-DotEnv-Variable -Variable "USER_NAME" -Text "Your name"
+
+GetSet-DotEnv-Variable -Variable "GIT_EMAIL" -Text "Git Config E-mail" -Default $default_email
+GetSet-DotEnv-Variable -Variable "GIT_USER_NAME" -Text "Git Config User Name" -Default $default_user
+
+Write-Information -MessageData 'Service provider questions'
+
+# GetSet-DotEnv-Variable -Variable "DNS_HE_PASSWORD" -Text "DNS HE Password"
+
+# GetSet-DotEnv-Variable -Variable "CF_TOKEN" -Text "CloudFlare Account Token"
+# GetSet-DotEnv-Variable -Variable "CF_DOMAIN" -Text "CloudFlare Account Domain"
+# GetSet-DotEnv-Variable -Variable "CF_RECORD" -Text "CloudFlare Account Record"
+# GetSet-DotEnv-Variable -Variable "CF_EMAIL" -Text "CloudFlare Account E-mail" -Default $default_email
+
 
 # Set execution policy
-if (Ask -Text "Would you like to set ExecutionPolicy to Bypass for CurrentUser?" -Default "N")
+if (!(Get-ExecutionPolicy -eq "Bypass"))
 {
-    Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser
+    if (Ask -Text "Would you like to set ExecutionPolicy to Bypass for CurrentUser?" -Default "N")
+    {
+        Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser
+    }    
+}
+else {
+    Write-Information "Execution policy = Bypass"
 }
 
 
 # Install Chocolatey
-if (Ask -Text "Would you like to install Chocolatey?" -Default "Y")
+if (Where.exe "choco") {
+    Write-Information "Chocolatey already installed"
+}
+elseif (Ask -Text "Would you like to install Chocolatey?" -Default "Y")
 {
     Write-Information -MessageData 'Installing Chocolatey'
     Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
@@ -175,32 +273,54 @@ if (Ask -Text "Would you like to install Chocolatey?" -Default "Y")
 
 
 # Install Git
-if (Ask -Text "Would you like to install Git?" -Default "Y")
+if (Where.exe "git") {
+    Write-Information "Git already installed"
+}
+elseif (Ask -Text "Would you like to install Git?" -Default "Y")
 {
     Write-Information -MessageData 'Installing Git'
     choco upgrade -y git --params "'/GitAndUnixToolsOnPath /WindowsTerminalProfile'" --params-global
     $Env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")  
 }
 
-if (Ask -Text "Would you like to set global Git configurations now?" -Default "Y") {
-    Write-Information -MessageData 'Setting up Git'
-    git config --global user.name "$Env:GIT_USER_NAME"
-    git config --global user.name
-    git config --global user.email "$Env:GIT_EMAIL"
-    git config --global user.email
+$git_global_username = git config --global user.name
+$git_global_email = git config --global user.email
+if ([string]::IsNullOrWhiteSpace($git_global_username) -or [string]::IsNullOrWhiteSpace($git_global_email))
+{
+    if (Ask -Text "Would you like to set global Git configurations now?" -Default "Y") {
+        Write-Information -MessageData 'Setting up Git'
+        git config --global user.name "$Env:GIT_USER_NAME"
+        git config --global user.name
+        git config --global user.email "$Env:GIT_EMAIL"
+        git config --global user.email
+    }    
+}
+else {
+    Write-Information -MessageData 'Get global username and email already set'
 }
 
 
 # Create id_rsa file to use with GitHub
-if (Ask -Text "Would you like to create ~/.ssh/id_rsa now?" -Default "Y") {
+if (Test-Path -PathType Leaf "$Env:USERPROFILE\.ssh\id_rsa")
+{
+    Write-Information "Private key ~/.ssh/id_rsa already created"
+}
+elseif (Ask -Text "Would you like to create ~/.ssh/id_rsa now?" -Default "Y") {
     Write-Information "Creating ~/.ssh/id_rsa file"
     if (!(Test-Path -PathType Leaf "$Env:USERPROFILE\.ssh\id_rsa"))
     {
         ssh-keygen -t rsa -b 4096 -C "$Env:ID_RSA_EMAIL"
     }
 }
-if (Ask -Text "Would you like to setup GitHub now?" -Default "Y") {
-    if (Test-Path -PathType Leaf "$Env:USERPROFILE\.ssh\id_rsa")
+
+
+# Setup GitHub
+if (Get-Check-Point "GITHUB")
+{
+    Write-Information "GitHub already configured before"
+}
+elseif (Ask -Text "Would you like to setup GitHub now?" -Default "Y") {
+    if (Test-Path -PathType Leaf "$Env:USERPROFILE\.ssh\id_rsa.pub")
     {
         Write-Information "Paste the following content:"
         Write-Information ""
@@ -209,18 +329,55 @@ if (Ask -Text "Would you like to setup GitHub now?" -Default "Y") {
         Write-Information "at: https://github.com/settings/ssh/new"
         Read-Host "Press Enter to continue"
     }
+    else {
+        Write-Information "Could not find id_rsa.pub file"
+    }
+
+    Set-Check-Point "GITHUB"
 }
 
 
 # Create Projects directory
-if (Ask -Text "Would you like to create D:\Projects directory now?" -Default "Y") {
+if (Test-Path -PathType Container "D:\Projects")
+{
+    Write-Information "D:\Projects already created"
+}
+elseif (Ask -Text "Would you like to create D:\Projects directory now?" -Default "Y") {
     Write-Information -MessageData 'Creating Projects directory'
-    md -Force "D:\Projects"
+    Write-Information "    There are 2 ways of creating the projects folder."
+    Write-Information "1) Just create folder"
+    Write-Information "2) Use SyncThing + SyncTrayzor to synchronize with another computer"
+    $choice = Multiple-Options -Text "Choose an option" -Options @( "1", "2" )
+    if ($choice -eq "1")
+    {
+        md -Force "D:\Projects"
+    }
+    if ($choice -eq "2")
+    {
+        choco upgrade -y synctrayzor
+        Write-Information "Use SyncTrayzor to synchronize the Projects folder now"
+    }
+}
+
+
+# Projects firewall exclusion
+if (Get-Check-Point "FIREWALL_EXCLUSION_PROJECTS")
+{
+    Write-Information "Firewall exclusion for Projects already configured before"
+}
+elseif (Ask -Text "Would you like to create a firewall exclusion for D:\Projects directory now?" -Default "Y") {
+{
+    Add-MpPreference -ExclusionPath "D:\Projects"
+    Set-Check-Point "FIREWALL_EXCLUSION_PROJECTS"
 }
 
 
 # Cloning Windows-11-Scripts
-if (Ask -Text "Would you like to clone Windows-11-Scripts now?" -Default "Y") {
+if (Test-Path -PathType Container "D:\Projects\Windows-11-Scripts")
+{
+    Write-Information "D:\Projects\Windows-11-Scripts already cloned"
+}
+elseif (Ask -Text "Would you like to clone Windows-11-Scripts now?" -Default "Y") {
     if (Test-Path -PathType Container "D:\Projects")
     {
         Write-Information -MessageData 'Cloning Windows-11-Scripts'
@@ -241,4 +398,31 @@ if (Ask -Text "Would you like to clone Windows-11-Scripts now?" -Default "Y") {
 
 
 # Done
-Write-Information -MessageData 'Done.'
+Write-Information -MessageData 'Basic install is done.'
+
+while (Test-Path -PathType Container "D:\Projects\Windows-11-Scripts")
+{
+    cd "D:\Projects\Windows-11-Scripts"
+
+    Write-Information -MessageData 'You can now run other setup steps:'
+    Write-Information -MessageData '1) common-install.ps1: installs common tools, such as VS Code, Everything, and so on'
+    Write-Information -MessageData '2) clone-my-projects.ps1: clones projects from GitHub'
+    Write-Information -MessageData 'Q) quit'
+    $choice = Multiple-Options -Text "Choose an option" -Options @( "1", "2" )
+    $choice = $choice.ToLower()
+    if ($choice -eq "1")
+    {
+        .\common-install.ps1
+    }
+    if ($choice -eq "2")
+    {
+        .\clone-my-projects.ps1
+    }
+    if ($choice -eq "q")
+    {
+        break
+    }
+
+}
+
+Write-Information -MessageData 'Done'

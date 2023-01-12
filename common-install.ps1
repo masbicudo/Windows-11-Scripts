@@ -49,14 +49,42 @@ if (Ask -Text "Would you like to create C:\Shortcuts directory now?" -Default "N
     md -Force "C:\Shortcuts"
 }
 
+
+# Add Shortcuts directory to PATH
 if (Ask -Text "Would you like to add Shortcuts folder to PATH now?" -Default "N") {
     Write-Information -MessageData 'Adding Shortcuts folder to PATH'
     Add-Path-First "C:\Shortcuts"
 }
 
 
+# Install basic utilities
+if (Ask -Text "Would you like to install basic file utilities" -Default "N") {
+    . .\choco-bundles\basic-files-utilities.ps1
+}
+
+
+# Install basic utilities
+Write-Information "File Synchronization Tools"
+if (Ask -Text "Would you like to install file synch tools" -Default "N") {
+    . .\choco-bundles\file-sync-tools.ps1
+}
+
+
+# Install dev tools
+if (Ask -Text "Would you like to install basic dev tools" -Default "N") {
+    . .\choco-bundles\basic-dev-tools.ps1
+}
+if (Ask -Text "Would you like visit Visual Studio Community download web page" -Default "N") {
+    Start-Process "https://visualstudio.microsoft.com/vs/community/"
+}
+
+
 # Clone MoveShortcuts
 if (Ask -Text "Would you like to clone MoveShortcuts project now?" -Default "N") {
+    if (!(Where.exe "git"))
+    {
+        choco upgrade -y git --params "'/GitAndUnixToolsOnPath /WindowsTerminalProfile'" --params-global
+    }
     pushd "D:\Projects"
     try {
         if (!(Test-Path -PathType Container "MoveShortcuts")) {
@@ -78,8 +106,13 @@ if (Ask -Text "Would you like to clone MoveShortcuts project now?" -Default "N")
     }
 }
 
+
 # Clone MoveShortcuts
 if (Ask -Text "Would you like to build MoveShortcuts project now?" -Default "N") {
+    if (!(Where.exe "dotnet"))
+    {
+        choco upgrade -y dotnet
+    }
     pushd "D:\Projects\MoveShortcuts"
     try {
         if (Test-Path -PathType Container "MoveShortcuts") {
@@ -91,29 +124,6 @@ if (Ask -Text "Would you like to build MoveShortcuts project now?" -Default "N")
     } finally {
         popd
     }
-}
-
-
-# Install basic utilities
-if (Ask -Text "Would you like to install basic file utilities" -Default "N") {
-    . .\choco-bundles\basic-files-utilities.ps1
-}
-
-# Install basic utilities
-Write-Information "File Synchronization Tools"
-Write-Information "    SyncThing can be used to synchronize the D:\Projects folder."
-Write-Information "    To do this, you must delete or rename the current Projects folder,"
-Write-Information "    Then import Projects folder using SyncThing."
-if (Ask -Text "Would you like to install file synch tools" -Default "N") {
-    . .\choco-bundles\file-sync-tools.ps1
-}
-
-# Install dev tools
-if (Ask -Text "Would you like to install basic dev tools" -Default "N") {
-    . .\choco-bundles\basic-dev-tools.ps1
-}
-if (Ask -Text "Would you like visit Visual Studio Community download web page" -Default "N") {
-    Start-Process "https://visualstudio.microsoft.com/vs/community/"
 }
 
 # Done
