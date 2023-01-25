@@ -451,6 +451,10 @@ while (Test-Path -PathType Container "D:\Projects\Windows-11-Scripts")
     {
         .\clone-my-projects.ps1
     }
+    if ($choice -eq "2")
+    {
+        .\python-basic-tools.ps1
+    }
     if ($choice -eq "q")
     {
         break
