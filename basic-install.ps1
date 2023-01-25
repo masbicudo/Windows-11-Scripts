@@ -210,7 +210,19 @@ function Load-DotEnv {
 Write-Information "Windows Environment Setup Script"
 Write-Information "    by Miguel Angelo"
 Write-Information "    latest: 2023-01-12"
-Write-Information "    version: 1.0.1"
+Write-Information "    version: 1.0.2"
+
+Write-Information "Index:"
+Write-Information "    # Set execution policy"
+Write-Information "    # Install Chocolatey"
+Write-Information "    # Install Git"
+Write-Information "    # Create id_rsa file to use with GitHub"
+Write-Information "    # Setup GitHub"
+Write-Information "    # Create Projects directory"
+Write-Information "    # Projects firewall exclusion"
+Write-Information "    # Cloning Windows-11-Scripts"
+Write-Information "    # Other operations"
+
 
 if (Test-Path -PathType Container "D:\Projects\Windows-11-Scripts")
 {
@@ -218,7 +230,6 @@ if (Test-Path -PathType Container "D:\Projects\Windows-11-Scripts")
 }
 else
 {
-    # $Force = $true
 }
 
 
@@ -317,6 +328,7 @@ else
 
 
 # Create id_rsa file to use with GitHub
+Write-Information "An id_rsa file will be needed to setup online services like GitHub."
 if (Test-Path -PathType Leaf "$Env:USERPROFILE\.ssh\id_rsa")
 {
     Write-Information "Private key ~/.ssh/id_rsa already created"
@@ -419,6 +431,7 @@ elseif (Ask -Text "Would you like to clone Windows-11-Scripts now?" -Default "Y"
 # Done
 Write-Information 'Basic install is done.'
 
+# Other operations
 while (Test-Path -PathType Container "D:\Projects\Windows-11-Scripts")
 {
     cd "D:\Projects\Windows-11-Scripts"
@@ -426,8 +439,9 @@ while (Test-Path -PathType Container "D:\Projects\Windows-11-Scripts")
     Write-Information 'You can now run other setup steps:'
     Write-Information '1) common-install.ps1: installs common tools, such as VS Code, Everything, and so on'
     Write-Information '2) clone-my-projects.ps1: clones projects from GitHub'
+    Write-Information '3) python-basic-tools.ps1: installs basic Python tools'
     Write-Information 'Q) quit'
-    $choice = Multiple-Options -Text "Choose an option" -Options @( "1", "2" )
+    $choice = Multiple-Options -Text "Choose an option" -Options @( "1", "2", "3", "q" )
     $choice = $choice.ToLower()
     if ($choice -eq "1")
     {

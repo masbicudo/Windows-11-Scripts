@@ -142,6 +142,7 @@ GoTo :End_Main
 
     :: AWS CLI
     choco upgrade -y awscli
+    choco upgrade -y awscli-session-manager
 
     :: Android
     REM choco upgrade -y adb

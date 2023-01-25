@@ -21,8 +21,6 @@
 # Input parameters
 [OutputType($null)]
 Param(
-    [Parameter()]
-    [switch] $Force
 )
 
 
@@ -107,7 +105,7 @@ if (Ask -Text "Would you like to clone MoveShortcuts project now?" -Default "N")
 }
 
 
-# Clone MoveShortcuts
+# Build MoveShortcuts
 if (Ask -Text "Would you like to build MoveShortcuts project now?" -Default "N") {
     if (!(Where.exe "dotnet"))
     {

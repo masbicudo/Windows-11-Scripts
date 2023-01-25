@@ -7,11 +7,11 @@ This code is provided as is.
 ## Basic Install
 
 ```powershell
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/masbicudo/Windows-11-Scripts/master/basic-install.ps1?t='+[DateTime]::Now.ToFileTimeUtc()))
+Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/masbicudo/Windows-11-Scripts/master/basic-install.ps1'))
 ```
 
-The basic installation script will install the first needed tools to
-make further modifications to the system:
+The basic installation script will install the first
+needed tools to make further modifications to the system:
 
 - Chocolatey
 - Git
