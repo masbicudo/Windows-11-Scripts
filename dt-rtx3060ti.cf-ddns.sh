@@ -4,7 +4,7 @@
 
 export token="$CF_TOKEN"
 export domain="$CF_DOMAIN"
-export record="$CF_RECORD_NB_AVELL"
+export record="$CF_RECORD_DT_RTX3060TI"
 export email="$CF_EMAIL"
 
 echo token=$token
