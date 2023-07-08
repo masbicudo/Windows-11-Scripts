@@ -30,6 +30,8 @@ $InformationPreference = 'Continue'
 
 . .\libs\Ask.ps1
 . .\libs\Load-DotEnv.ps1
+. .\libs\Update-Path.ps1
+. .\libs\Add-Path-First.ps1
 
 Load-DotEnv
 
@@ -40,15 +42,18 @@ if (Ask -Text "Remove unwanted Python installer that comes with Windows" -Defaul
 
 if (Ask -Text "Install pyenv-win" -Default "N") {
     choco upgrade -y pyenv-win
+    Update-Path
 }
 
 if (Ask -Text "Install Python 3.10.4 as global Python interpreter" -Default "N") {
     pyenv install 3.10.4
     pyenv global 3.10.4
+    Update-Path
 }
 
 if (Ask -Text "Install PDM package manager" -Default "N") {
-    pip install --user pdm
+    (Invoke-WebRequest -Uri https://raw.githubusercontent.com/pdm-project/pdm/main/install-pdm.py -UseBasicParsing).Content | python -
+    Add-Path-First "%APPDATA%\Python\Scripts"
 }
 
 if (Ask -Text "Install Pipx" -Default "N") {
