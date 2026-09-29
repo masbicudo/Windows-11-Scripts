@@ -13,3 +13,10 @@ that do not belong to the provisioning system.
 
 No new provisioning engine has been implemented yet. Project governance and
 architectural decisions will be established before implementation begins.
+
+Start with:
+
+- [`AGENTS.md`](AGENTS.md) for repository-wide rules;
+- [`docs/README.md`](docs/README.md) for the documentation map;
+- [`docs/architecture/overview.md`](docs/architecture/overview.md) for scope,
+  boundaries, and open decisions.
