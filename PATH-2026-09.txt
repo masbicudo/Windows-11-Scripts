@@ -1,0 +1,86 @@
+PATH combinado e expandido — ordem de prioridade (maior para menor)
+Origem: PATH do sistema seguido pelo PATH do usuário
+
+001 [Sistema] C:\texlive\2026\bin\windows
+002 [Sistema] C:\Program Files (x86)\Common Files\Oracle\Java\java8path
+003 [Sistema] C:\Program Files (x86)\Common Files\Oracle\Java\javapath
+004 [Sistema] C:\tools\ruby34\bin
+005 [Sistema] C:\tools\ruby33\bin
+006 [Sistema] C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.0\bin
+007 [Sistema] C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.0\libnvvp
+008 [Sistema] C:\Program Files\Microsoft MPI\Bin\
+009 [Sistema] C:\texlive\2023\bin\windows
+010 [Sistema] C:\Users\masbi\.pyenv\pyenv-win\bin
+011 [Sistema] C:\Users\masbi\.pyenv\pyenv-win\shims
+012 [Sistema] C:\tools\ruby31\bin
+013 [Sistema] C:\Program Files\Microsoft\jdk-11.0.16.101-hotspot\bin
+014 [Sistema] C:\Windows\system32
+015 [Sistema] C:\tools\Python3x\Scripts\
+016 [Sistema] C:\tools\Python3x\
+017 [Sistema] C:\Windows
+018 [Sistema] C:\Windows\System32\Wbem
+019 [Sistema] C:\Windows\System32\WindowsPowerShell\v1.0\
+020 [Sistema] C:\Windows\System32\OpenSSH\
+021 [Sistema] C:\ProgramData\chocolatey\bin
+022 [Sistema] C:\Program Files\Microsoft VS Code\bin
+023 [Sistema] C:\Program Files\PostgreSQL\14\bin
+024 [Sistema] C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common
+025 [Sistema] C:\Program Files\dotnet\
+026 [Sistema] C:\Shortcuts
+027 [Sistema] C:\ProgramData\nvm
+028 [Sistema] C:\Program Files\Microsoft SQL Server\150\Tools\Binn\
+029 [Sistema] C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\
+030 [Sistema] C:\Program Files\Microsoft SQL Server\130\Tools\Binn\
+031 [Sistema] C:\WINDOWS\system32
+032 [Sistema] C:\WINDOWS
+033 [Sistema] C:\WINDOWS\System32\Wbem
+034 [Sistema] C:\WINDOWS\System32\WindowsPowerShell\v1.0\
+035 [Sistema] C:\WINDOWS\System32\OpenSSH\
+036 [Sistema] C:\Program Files\PostgreSQL\15\bin
+037 [Sistema] C:\ProgramData\nvm
+038 [Sistema] C:\nvm4w\nodejs
+039 [Sistema] C:\Program Files (x86)\Microsoft SQL Server\160\DTS\Binn\
+040 [Sistema] C:\Program Files\Azure Data Studio\bin
+041 [Sistema] C:\Program Files\PostgreSQL\16\bin
+042 [Sistema] C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\bin\Hostx64\x64
+043 [Sistema] C:\Program Files\NVIDIA Corporation\NVIDIA app\NvDLISR
+044 [Sistema] C:\Program Files\PostgreSQL\17\bin
+045 [Sistema] C:\Program Files\Microsoft VS Code Insiders\bin
+046 [Sistema] C:\Program Files (x86)\Diffuse
+047 [Sistema] C:\texlive\2025\bin\windows
+048 [Sistema] C:\Program Files\NVIDIA Corporation\Nsight Compute 2025.3.1\
+049 [Sistema] C:\Program Files\OpenJDK\jdk-25\bin
+050 [Sistema] C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\
+051 [Sistema] C:\Program Files\Amazon\SessionManagerPlugin\bin\
+052 [Sistema] C:\Program Files\Microsoft SQL Server\170\Tools\Binn\
+053 [Sistema] C:\Program Files\CMake\bin
+054 [Sistema] C:\Program Files\Docker\Docker\resources\bin
+055 [Sistema] C:\Program Files\GitHub CLI\
+056 [Sistema] C:\Program Files\Git\cmd
+057 [Sistema] C:\Program Files\Git\mingw64\bin
+058 [Sistema] C:\Program Files\Git\usr\bin
+059 [Sistema] C:\Program Files\GitExtensions\
+060 [Sistema] C:\ProgramData\mingw64\mingw64\bin
+061 [Sistema] C:\Program Files\nodejs\
+062 [Sistema] C:\Program Files\PostgreSQL\18\bin
+063 [Sistema] C:\Program Files\Amazon\AWSCLIV2\
+064 [Sistema] C:\Program Files\PowerToys\DSCModules\
+065 [Sistema] C:\Program Files\PowerShell\7\
+066 [Usuário] C:\Users\masbi\.elan\bin
+067 [Usuário] c:\program files (x86)\freearc\bin
+068 [Usuário] c:\users\masbi\appdata\local\programs\microsoft vs code insiders\bin
+069 [Usuário] c:\tools\msys64
+070 [Usuário] c:\users\masbi\appdata\local\programs\oh-my-posh\bin
+071 [Usuário] c:\users\masbi\appdata\local\pandoc\
+072 [Usuário] c:\users\masbi\appdata\local\programs\fiddler
+073 [Usuário] C:\Users\masbi\appdata\local\microsoft\windowsapps\
+074 [Usuário] c:\users\masbi\appdata\roaming\python\scripts
+075 [Usuário] C:\Users\masbi\.dotnet\tools
+076 [Usuário] C:\Users\masbi\AppData\Local\Programs\Microsoft VS Code Insiders\bin
+077 [Usuário] C:\Program Files\Amazon\SessionManagerPlugin\bin
+078 [Usuário] C:\Users\masbi\AppData\Local\Programs\Ollama
+079 [Usuário] C:\Shortcuts
+080 [Usuário] C:\ProgramData\chocolatey\lib\gcloudsdk\tools\google-cloud-sdk\bin
+081 [Usuário] C:\Users\masbi\AppData\Roaming\npm
+082 [Usuário] C:\Program Files\Oracle\VirtualBox
+083 [Usuário] C:\Users\masbi\AppData\Local\Microsoft\WindowsApps

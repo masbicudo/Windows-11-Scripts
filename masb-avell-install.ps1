@@ -7,6 +7,8 @@ if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     }
 }
 
+Import-Module "$PSScriptRoot/libs/Install-FromURL.psm1" -Force
+
 # Package Management
 # Chocolatey
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
@@ -36,6 +38,7 @@ choco upgrade -y dotnet-9.0-desktopruntime
 choco upgrade -y dotnet-10.0-desktopruntime --pre
 choco upgrade -y javaruntime
 choco upgrade -y jre8
+choco upgrade -y openjdk
 
 # MSYS2 and MinGW
 choco upgrade -y msys2
@@ -47,33 +50,49 @@ choco upgrade -y mingw
 #abra https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi
 #wsl --set-default-version 2
 #choco upgrade -y wsl-ubuntu-2004
+wsl --install
+wsl --install -d Ubuntu-24.04
 
 # Development GUI Tools
 choco upgrade -y vscode
 choco upgrade -y vscode-insiders
 #choco upgrade -y visualstudio-installer
-choco upgrade -y notepadplusplus
 choco upgrade -y gitextensions
 choco upgrade -y winmerge # 2-way diff tool, supports folders
 choco upgrade -y kdiff3   # 3-way diff tool, used by git
 choco upgrade -y diffuse  # N-way diff tool
+choco upgrade -y notepadplusplus
+
+# Jarte is a free word processor based on the Microsoft WordPad
+# word processing engine built into Windows. It has a tabbed interface
+# and many features not found in WordPad, such as spell checking,
+# thesaurus, auto-correction, and support for opening multiple
+# documents in a single window.
+Install-FromUrl `
+  -Url "https://www.jarte.com/download_secret_afer9_gorp3/jarte_plus_62_setup.exe" `
+  -ExpectedHash "907C39721E42A65057B93EBFFB75E076A1FAE8E0" `
+  -HashAlgorithm "SHA1" `
+  -InstallerArgs "/VERYSILENT /NORESTART /SUPPRESSMSGBOXES /SP- /TASKS="""""
+Get-Process jarte -ErrorAction SilentlyContinue | Stop-Process -Force
 
 # Database Tools
 choco upgrade -y sqlitebrowser
 choco upgrade -y dbeaver
 choco upgrade -y pgadmin4
-choco uninstall -y postgresql11
-choco uninstall -y postgresql12
-choco uninstall -y postgresql13
-choco upgrade -y postgresql14 --params '/Password:mig29' --params-global
-choco uninstall -y postgresql15
-choco uninstall -y postgresql16
-choco upgrade -y postgresql17 --params '/Password:mig29' --params-global
+#choco uninstall -y postgresql11
+#choco uninstall -y postgresql12
+#choco uninstall -y postgresql13
+# if needed pass /NoStackBuilder to disable stack builder
+choco upgrade -y postgresql14 --params "'/Password:$env:POSTGRES_PASSWORD /NoPgAdmin'" --params-global
+#choco uninstall -y postgresql15
+#choco uninstall -y postgresql16
+choco upgrade -y postgresql17 --params "'/Password:$env:POSTGRES_PASSWORD /NoPgAdmin'" --params-global
 
 # Other Dev Tools
 choco upgrade -y tad # csv viewer and editor
 choco upgrade -y nginx # web server
 choco upgrade -y win-acme # SSL - letsencrypt client for windows
+choco upgrade -y hxd # hex editor
 
 # Network Debugging Tools
 choco upgrade -y wireshark
@@ -86,6 +105,17 @@ choco upgrade -y cmake
 
 # Virtualization
 choco upgrade -y docker
+# Disable Docker Desktop Dashboard opening on startup.
+foreach ($dockerSettings in @(
+    "$env:APPDATA\Docker\settings-store.json",
+    "$env:APPDATA\Docker\settings.json"
+)) {
+    if (Test-Path -LiteralPath $dockerSettings) {
+        $settings = Get-Content -LiteralPath $dockerSettings -Raw | ConvertFrom-Json
+        $settings.openUIOnStartupDisabled = $true
+        $settings | ConvertTo-Json -Depth 100 | Set-Content -LiteralPath $dockerSettings -Encoding UTF8
+    }
+}
 choco upgrade -y virtualbox
 choco upgrade -y sandboxie
 
@@ -126,6 +156,7 @@ choco upgrade -y ghc
 # using pyenv-win to manage multiple python versions
 #choco upgrade -y python --params "'/InstallDir:C:\Python39'" --params "'/AddToPath:1'" --params-global
 choco upgrade -y pyenv-win
+powershell -ExecutionPolicy ByPass -c "irm https://pdm-project.org/install-pdm.py | python -"
 
 # Go Development
 
@@ -165,6 +196,7 @@ Invoke-WebRequest "https://web.archive.org/web/20150319224343if_/http://freearc.
 Start-Process "$env:TEMP\FreeArc.exe" -ArgumentList "/S" -Wait
 
 # File Sync Tools
+choco upgrade -y rsync
 choco upgrade -y synctrayzor
 # this version of google drive is deprecated
 choco uninstall -y google-drive-file-stream
@@ -186,6 +218,7 @@ choco upgrade -y discord
 choco upgrade -y adobereader
 choco upgrade -y sumatrapdf
 choco upgrade -y sendtokindle
+choco upgrade -y pdf24
 
 # System Info Tools
 choco upgrade -y cpu-z
@@ -199,6 +232,14 @@ choco upgrade -y hwinfo
 choco upgrade -y bleachbit
 choco upgrade -y ccleaner
 
+# Other system tools
+# Windows ADK is the Windows Assessment and Deployment Kit,
+# a collection of tools and technologies that you can use to
+# customize, assess, and deploy Windows operating systems to
+# new computers.
+# It has WPR, ETW and WPA: Windows Performance Recorder, Event Tracing for Windows and Windows Performance Analyzer
+winget install Microsoft.WindowsADK
+
 # System Tweaking Tools
 choco upgrade -y powertoys
 choco upgrade -y autohotkey
@@ -206,12 +247,19 @@ choco upgrade -y speedtest
 choco upgrade -y shutup10
 choco upgrade -y revo-uninstaller
 choco upgrade -y sysinternals
-choco upgrade -y sizer
 choco upgrade -y imdisk-toolkit
 choco upgrade -y nssm
 choco upgrade -y procexp
 choco upgrade -y dontsleep
 choco upgrade -y msiafterburner
+# Package sizer is no more available
+# choco upgrade -y sizer
+Install-FromUrl `
+  -Url "https://www.brianapps.net/sizer4/sizer4_dev640.msi" `
+  -ExpectedHash "52B5984E53AFDD4CA8E77B6F6040C40E0670CB6F0C89B77BA4DC804266D3FD61" `
+  -HashAlgorithm "SHA256" `
+  -InstallerArgs "/qn" `
+  -ProcessName "Sizer"
 
 # USB Drive Tools
 choco upgrade -y rufus
@@ -224,8 +272,9 @@ Invoke-WebRequest "https://pendrivelinux.com/downloads/YUMI/YUMI-exFAT-1.0.3.0.e
 
 # Video Tools
 choco upgrade -y vlc
-# close edge if open, otherwise the upgrade of obs-studio will fail
+# close edge and Teams if open, otherwise the upgrade of obs-studio will fail
 Stop-Process -Name "msedge" -Force -ErrorAction SilentlyContinue
+Stop-Process -Name "Teams", "ms-teams" -Force -ErrorAction SilentlyContinue
 choco upgrade -y obs-studio
 choco upgrade -y handbrake
 choco upgrade -y ffmpeg
@@ -301,7 +350,8 @@ choco upgrade -y winauth
 choco upgrade -y virustotaluploader
 
 # Latex
-choco upgrade -y texlive --params="'/scheme:full'" --execution-timeout=10000
+# TeX Live full can exceed Chocolatey's default 2700s timeout on slow mirrors.
+choco upgrade -y texlive --params="'/scheme:full /InstallationPath:C:/texlive/2026 /InstallerParameters:-lang=en'" --execution-timeout=10000
 choco upgrade -y texstudio
 choco upgrade -y pandoc
 
@@ -332,3 +382,39 @@ if (-not (Select-String -Path $profile5 -Pattern ([regex]::Escape($profileLine))
 # install fonts
 # ref: https://ohmyposh.dev/docs/installation/fonts
 & $ohMyPosh font install meslo
+
+
+
+
+
+
+
+# Optimizations
+
+## Edge Startup Boost and Preloading can cause high CPU usage on startup,
+## especially on older machines. Disabling these features can help reduce
+## CPU usage and improve startup times.
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v StartupBoostEnabled /t REG_DWORD /d 0 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v AllowPrelaunch /t REG_DWORD /d 0 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v AllowTabPreloading /t REG_DWORD /d 0 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Dsh" /v AllowNewsAndInterests /t REG_DWORD /d 0 /f
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v TaskbarDa /t REG_DWORD /d 0 /f
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Search\Flighting\IsDynamicSearchBoxEnabled" /v Value /t REG_DWORD /d 0 /f
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Search\Flighting\SearchBoxHighlights" /v Value /t REG_DWORD /d 0 /f
+
+reg add "HKCU\Software\Policies\Microsoft\Windows\Explorer" /v DisableSearchBoxSuggestions /t REG_DWORD /d 1 /f
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Search" /v BingSearchEnabled /t REG_DWORD /d 0 /f
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Search" /v CortanaConsent /t REG_DWORD /d 0 /f
+
+taskkill /f /im Widgets.exe
+schtasks /Change /TN "\Microsoft\Windows\Shell\FamilySafetyMonitor" /Disable 2>nul
+schtasks /Change /TN "\Microsoft\Windows\Shell\FamilySafetyRefresh" /Disable 2>nul
+schtasks /Change /TN "\Microsoft\Windows\Shell\WidgetsTask" /Disable 2>nul
+
+
+schtasks /Create /SC ONLOGON /TN "Start GoogleDrive Delayed" /TR "powershell.exe -NoProfile -WindowStyle Hidden -Command Start-Process -FilePath 'C:\Program Files\Google\Drive File Stream\launch.bat' -WindowStyle Hidden" /DELAY 0000:05 /F
+schtasks /Create /SC ONLOGON /TN "Start Synology Delayed" /TR "powershell.exe -NoProfile -WindowStyle Hidden -Command Start-Process -FilePath 'C:\Program Files\Synology\SynologyDrive\bin\launcher.exe' -WindowStyle Hidden" /DELAY 0000:15 /F
+schtasks /Create /SC ONLOGON /TN "Start OneDrive Delayed" /TR "powershell.exe -NoProfile -WindowStyle Hidden -Command Start-Process -FilePath 'C:\Program Files\Microsoft OneDrive\OneDrive.exe' -ArgumentList '/background' -WindowStyle Hidden" /DELAY 0000:30 /F
+schtasks /Create /SC ONLOGON /TN "Start Everything Search Delayed" /TR "powershell.exe -NoProfile -WindowStyle Hidden -Command Start-Process -FilePath 'C:\Program Files\Everything\Everything.exe' -ArgumentList '-startup' -WindowStyle Hidden" /DELAY 0000:45 /F
+schtasks /Create /SC ONLOGON /TN "Start SyncThing Delayed" /TR "powershell.exe -NoProfile -WindowStyle Hidden -Command Start-Process -FilePath 'C:\Program Files\SyncTrayzor\SyncTrayzor.exe' -ArgumentList '--minimized' -WindowStyle Minimized" /DELAY 0002:00 /F
+schtasks /Create /SC ONLOGON /TN "Start Docker Desktop Delayed" /TR "powershell.exe -NoProfile -WindowStyle Hidden -Command ""Start-Process -FilePath 'C:\Program Files\Docker\Docker\Docker Desktop.exe'""" /DELAY 0005:00 /F
