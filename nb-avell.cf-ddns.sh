@@ -50,9 +50,16 @@ record_id=${dns_record[id]}
 record_ttl=${dns_record[ttl]}
 record_proxied=${dns_record[proxied]}
 
+echo old_ip=${dns_record[content]}
+echo record_type=${dns_record[type]}
+echo record_id=${dns_record[id]}
+echo record_ttl=${dns_record[ttl]}
+echo record_proxied=${dns_record[proxied]}
+
 # ref: https://api.ident.me/
 
 new_ip=$(curl v6.ident.me)
+echo new_ip=${new_ip}
 
 if [ "$new_ip" != "$old_ip" ]; then
 
@@ -65,7 +72,7 @@ if [ "$new_ip" != "$old_ip" ]; then
        "type": "'$record_type'",
        "name": "'$record'",
        "content": "'$new_ip'",
-       "ttl": "'$record_ttl'",
+       "ttl": '$record_ttl',
        "proxied": '$record_proxied'
        }'
 
